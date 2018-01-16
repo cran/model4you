@@ -1,0 +1,468 @@
+
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library("model4you")
+Loading required package: partykit
+Loading required package: grid
+Loading required package: libcoin
+Loading required package: mvtnorm
+Loading required package: rpart
+> library("survival")
+> 
+> ### survreg
+> set.seed(1)
+> data(GBSG2, package = "TH.data")
+> 
+> ## base model
+> bmod <- survreg(Surv(time, cens) ~ horTh, data = GBSG2, model = TRUE)
+> survreg_plot(bmod)
+> 
+> ## partitioned model
+> tr <- pmtree(bmod)
+No data given. I'm using data set GBSG2 from the current environment parent.frame(). 
+                   Please check if that is what you want.
+> plot(tr, terminal_panel = node_pmterminal(tr, plotfun = survreg_plot, 
++                                           confint = TRUE))
+> summary(tr)
+Stratified model for node(s) 2, 4, 5
+
+Model call:
+survreg(formula = Surv(time, cens) ~ horTh, data = GBSG2, model = TRUE)
+
+Coefficients:
+            node 2 node 4 node 5
+(Intercept) 7.8590 7.2936  6.981
+horThyes    0.4001 0.3039  0.163
+
+Number of obervations:
+node 2 node 4 node 5 
+   376    223     87 
+
+Objective function:
+(1093.18) + (1037.81) + (457.96) = 2588.95> summary(tr, node = 1:2)
+Stratified model for node(s) 1, 2
+
+Model call:
+survreg(formula = Surv(time, cens) ~ horTh, data = GBSG2, model = TRUE)
+
+Coefficients:
+            node 1 node 2
+(Intercept)  7.608 7.8590
+horThyes     0.306 0.4001
+
+Number of obervations:
+node 1 node 2 
+   686    376 
+
+Objective function:
+  node 1   node 2 
+2632.096 1093.182 
+> 
+> logLik(bmod)
+'log Lik.' -2632.096 (df=3)
+> logLik(tr)
+'log Lik.' -2588.953 (df=9)
+> 
+> 
+> ### glm binomial 
+> set.seed(2)
+> n <- 1000
+> trt <- factor(rep(1:2, each = n/2))
+> age <- sample(40:60, size = n, replace = TRUE)
+> eff <- -1 + I(trt == 2) + 1 * I(trt == 2) * I(age > 50)
+> expit <- function(x) 1/(1 + exp(-x))
+> 
+> success <- rbinom(n = n, size = 1, prob = expit(eff))
+> 
+> dat <- data.frame(success, trt, age)
+> library("plyr")
+> dattab <- ddply(.data = dat, .variables = .(trt, age), 
++                 function(x) data.frame(nsuccess = sum(x$success),
++                                        nfailure = NROW(x) - sum(x$success)))
+> 
+> bmod1 <- glm(success ~ trt, family = binomial)
+> bmod2 <- glm(success ~ trt, family = "binomial")
+> bmod3 <- glm(success ~ trt, data = dat, family = binomial)
+> bmod4 <- glm(cbind(nsuccess, nfailure) ~ trt, data = dattab, family = binomial)
+> 
+> (tr1 <- pmtree(bmod1, data = dat))
+[1] root
+|   [2] age <= 50
+|   |   [3] age <= 42: n = 153
+|   |       (Intercept)        trt2 
+|   |        -0.1300531   0.5027284 
+|   |   [4] age > 42: n = 371
+|   |       (Intercept)        trt2 
+|   |        -0.9932518   0.7773634 
+|   [5] age > 50: n = 476
+|       (Intercept)        trt2 
+|        -0.7958013   1.9056497 
+
+Number of inner nodes:    2
+Number of terminal nodes: 3
+Number of parameters per node: 2
+Objective function: 621.198
+> (tr2 <- pmtree(bmod2, data = dat))
+[1] root
+|   [2] age <= 50
+|   |   [3] age <= 42: n = 153
+|   |       (Intercept)        trt2 
+|   |        -0.1300531   0.5027284 
+|   |   [4] age > 42: n = 371
+|   |       (Intercept)        trt2 
+|   |        -0.9932518   0.7773634 
+|   [5] age > 50: n = 476
+|       (Intercept)        trt2 
+|        -0.7958013   1.9056497 
+
+Number of inner nodes:    2
+Number of terminal nodes: 3
+Number of parameters per node: 2
+Objective function: 621.198
+> (tr3 <- pmtree(bmod3))
+No data given. I'm using data set dat from the current environment parent.frame(). 
+                   Please check if that is what you want.
+[1] root
+|   [2] age <= 50
+|   |   [3] age <= 42: n = 153
+|   |       (Intercept)        trt2 
+|   |        -0.1300531   0.5027284 
+|   |   [4] age > 42: n = 371
+|   |       (Intercept)        trt2 
+|   |        -0.9932518   0.7773634 
+|   [5] age > 50: n = 476
+|       (Intercept)        trt2 
+|        -0.7958013   1.9056497 
+
+Number of inner nodes:    2
+Number of terminal nodes: 3
+Number of parameters per node: 2
+Objective function: 621.198
+> (tr4 <- pmtree(bmod4))
+No data given. I'm using data set dattab from the current environment parent.frame(). 
+                   Please check if that is what you want.
+[1] root
+|   [2] age <= 50
+|   |   [3] age <= 43: n = 8
+|   |       (Intercept)        trt2 
+|   |        -0.4367177   0.7420993 
+|   |   [4] age > 43: n = 14
+|   |       (Intercept)        trt2 
+|   |        -0.9253406   0.6662319 
+|   [5] age > 50: n = 20
+|       (Intercept)        trt2 
+|        -0.7958013   1.9056497 
+
+Number of inner nodes:    2
+Number of terminal nodes: 3
+Number of parameters per node: 2
+Objective function: 94.40128
+> 
+> (mtr1 <- glmtree(success ~ trt | age, data = dat, family = binomial))
+Generalized linear model tree (family: binomial)
+
+Model formula:
+success ~ trt | age
+
+Fitted party:
+[1] root
+|   [2] age <= 50
+|   |   [3] age <= 42: n = 153
+|   |       (Intercept)        trt2 
+|   |        -0.1300531   0.5027284 
+|   |   [4] age > 42: n = 371
+|   |       (Intercept)        trt2 
+|   |        -0.9932518   0.7773634 
+|   [5] age > 50: n = 476
+|       (Intercept)        trt2 
+|        -0.7958013   1.9056497 
+
+Number of inner nodes:    2
+Number of terminal nodes: 3
+Number of parameters per node: 2
+Objective function (negative log-likelihood): 621.198
+> # (mtr2 <- glmtree(cbind(nsuccess, nfailure) ~ trt | age, data = dattab, family = binomial))
+> 
+> library("strucchange")
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+
+Loading required package: sandwich
+> sctest(tr3)
+$`1`
+                   age
+statistic 1.754685e+01
+p.value   1.547928e-04
+
+$`2`
+                  age
+statistic 9.609115153
+p.value   0.008192325
+
+$`3`
+                age
+statistic 0.7184773
+p.value   0.6982077
+
+$`4`
+                age
+statistic 2.0024795
+p.value   0.3674237
+
+$`5`
+                age
+statistic 1.1781017
+p.value   0.5548537
+
+> sctest(tr4)
+$`1`
+                 age
+statistic 7.40146997
+p.value   0.02470536
+
+$`2`
+                 age
+statistic 8.03869435
+p.value   0.01796469
+
+$`3`
+NULL
+
+$`4`
+NULL
+
+$`5`
+                age
+statistic 1.1198024
+p.value   0.5712655
+
+> 
+> ## check logLik
+> logLik(mtr1)
+'log Lik.' -621.198 (df=8)
+> logLik(tr1)
+'log Lik.' -621.198 (df=6)
+> 
+> sum(objfun(tr1, newdata = dat))
+[1] -621.198
+> objfun(tr1, newdata = dat, sum = TRUE)
+[1] -621.198
+> sum(objfun(tr1))
+[1] -621.198
+> objfun(tr1, sum = TRUE)
+[1] -621.198
+> 
+> 
+> ## variable importance
+> logLik(tr1)
+'log Lik.' -621.198 (df=6)
+> logLik(tr1, perm = "age")
+'log Lik.' -674.0438 (df=NA)
+> a1 <- predict.party(tr1, perm = "age", type = "node")
+> a2 <- predict(tr1, perm = "age", type = "node")
+> a3 <- predict(tr1, perm = 3, type = "node")
+> b <- predict.party(tr1, type = "node")
+> varimp(tr1, nperm = 5)
+'log Lik.' 55.4331 (df=6)
+> 
+> 
+> library("ggplot2")
+> ofs <- data.frame(objfun_bmod1 = objfun(bmod1), 
++                   objfun_tr1 = objfun(tr1))
+> ggplot(ofs, aes(objfun_bmod1, objfun_tr1)) + geom_jitter(alpha = 0.3)
+> 
+> 
+> 
+> ### linear model and missings
+> data("MathExam14W", package = "psychotools")
+> 
+> ## scale points achieved to [0, 100] percent
+> MathExam14W$tests <- 100 * MathExam14W$tests/26
+> MathExam14W$pcorrect <- 100 * MathExam14W$nsolved/13
+> 
+> ## select variables to be used
+> MathExam <- MathExam14W[ , c("pcorrect", "group", "tests", "study",
++                              "attempt", "semester", "gender")]
+> 
+> ## compute base model
+> bmod_math <- lm(pcorrect ~ group, data = MathExam)
+> 
+> ## compute tree
+> (tr_math <- pmtree(bmod_math, control = ctree_control(maxdepth = 2)))
+No data given. I'm using data set MathExam from the current environment parent.frame(). 
+                   Please check if that is what you want.
+[1] root
+|   [2] tests <= 84.61538
+|   |   [3] tests <= 57.69231: n = 121
+|   |       (Intercept)      group2 
+|   |         40.694789   -4.580056 
+|   |   [4] tests > 57.69231: n = 425
+|   |       (Intercept)      group2 
+|   |         55.251855   -2.012988 
+|   [5] tests > 84.61538
+|   |   [6] tests <= 92.30769: n = 97
+|   |       (Intercept)      group2 
+|   |         66.730769   -3.033063 
+|   |   [7] tests > 92.30769: n = 86
+|   |       (Intercept)      group2 
+|   |          90.32967   -13.25576 
+
+Number of inner nodes:    3
+Number of terminal nodes: 4
+Number of parameters per node: 2
+Objective function: -276167.6
+> 
+> ## create data with NAs
+> Math_mx <- Math_mz <- MathExam
+> Math_mx$group[1:2] <- NA
+> Math_mz$tests[1:20] <- NA
+> 
+> bmod_math_mx <- lm(pcorrect ~ group, data = Math_mx)
+> 
+> (tr_math_mx1 <- pmtree(bmod_math, control = ctree_control(maxdepth = 2), data = Math_mx))
+[1] root
+|   [2] tests <= 84.61538
+|   |   [3] tests <= 57.69231: n = 120
+|   |       (Intercept)      group2 
+|   |          40.10088    -3.98615 
+|   |   [4] tests > 57.69231: n = 424
+|   |       (Intercept)      group2 
+|   |         55.180534   -1.941667 
+|   [5] tests > 84.61538
+|   |   [6] tests <= 92.30769: n = 97
+|   |       (Intercept)      group2 
+|   |         66.730769   -3.033063 
+|   |   [7] tests > 92.30769: n = 86
+|   |       (Intercept)      group2 
+|   |          90.32967   -13.25576 
+
+Number of inner nodes:    3
+Number of terminal nodes: 4
+Number of parameters per node: 2
+Objective function: -274637.2
+Warning message:
+In .prepare_args(model = model, data = data, zformula = zformula,  :
+  NAs in model variables (pcorrect, group). Omitting rows with NAs.
+> (tr_math_mx2 <- pmtree(bmod_math_mx, control = ctree_control(maxdepth = 2)))
+No data given. I'm using data set Math_mx from the current environment parent.frame(). 
+                   Please check if that is what you want.
+[1] root
+|   [2] tests <= 84.61538
+|   |   [3] tests <= 57.69231: n = 120
+|   |       (Intercept)      group2 
+|   |          40.10088    -3.98615 
+|   |   [4] tests > 57.69231: n = 424
+|   |       (Intercept)      group2 
+|   |         55.180534   -1.941667 
+|   [5] tests > 84.61538
+|   |   [6] tests <= 92.30769: n = 97
+|   |       (Intercept)      group2 
+|   |         66.730769   -3.033063 
+|   |   [7] tests > 92.30769: n = 86
+|   |       (Intercept)      group2 
+|   |          90.32967   -13.25576 
+
+Number of inner nodes:    3
+Number of terminal nodes: 4
+Number of parameters per node: 2
+Objective function: -274637.2
+Warning message:
+In .prepare_args(model = model, data = data, zformula = zformula,  :
+  NAs in model variables (pcorrect, group). Omitting rows with NAs.
+> (tr_math_mz <- pmtree(bmod_math, control = ctree_control(maxdepth = 2), data = Math_mz))
+[1] root
+|   [2] tests <= 84.61538
+|   |   [3] tests <= 57.69231: n = 123
+|   |       (Intercept)      group2 
+|   |         41.586538   -5.471806 
+|   |   [4] tests > 57.69231: n = 420
+|   |       (Intercept)      group2 
+|   |         54.807692   -1.568826 
+|   [5] tests > 84.61538
+|   |   [6] tests <= 92.30769: n = 97
+|   |       (Intercept)      group2 
+|   |         66.730769   -3.033063 
+|   |   [7] tests > 92.30769: n = 89
+|   |       (Intercept)      group2 
+|   |          89.06883   -11.99492 
+
+Number of inner nodes:    3
+Number of terminal nodes: 4
+Number of parameters per node: 2
+Objective function: -276926.2
+> 
+> 
+> ## check logLik
+> (tr_math_mob <- lmtree(pcorrect ~  group | ., data = MathExam, maxdepth = 2))
+Linear model tree
+
+Model formula:
+pcorrect ~ group | .
+
+Fitted party:
+[1] root
+|   [2] tests <= 84.61538: n = 546
+|       (Intercept)      group2 
+|         51.767152   -2.048578 
+|   [3] tests > 84.61538: n = 183
+|       (Intercept)      group2 
+|         77.743590   -7.729345 
+
+Number of inner nodes:    1
+Number of terminal nodes: 2
+Number of parameters per node: 2
+Objective function (residual sum of squares): 315116.8
+> 
+> logLik(bmod_math)
+'log Lik.' -3321.166 (df=3)
+> logLik(tr_math)
+'log Lik.' -3195.249 (df=12)
+> logLik(tr_math_mob)
+'log Lik.' -3245.756 (df=7)
+> 
+> sum(bmod_math$residuals^2)
+[1] 386684.1
+> 
+> ## varimp
+> of <- function(x, newdata = NULL, weights = NULL, 
++                perm = NULL, ...) {
++   - objfun(x, newdata = newdata, weights = weights, perm = perm, sum = TRUE, ...)
++ }
+> varimp(tr_math, nperm = 2, risk = of)
+   tests 
+167022.9 
+> 
+> # deeper tree
+> w <- rep(1, nrow(Math_mx))
+> w[5:100] <- 0
+> tr_math_d <- pmtree(bmod_math, data = Math_mx, weights = w,
++                     control = ctree_control(alpha = 0.7))
+Warning message:
+In .prepare_args(model = model, data = data, zformula = zformula,  :
+  NAs in model variables (pcorrect, group). Omitting rows with NAs.
+> varimp(tr_math_d, risk = of)
+      tests     attempt      gender       study    semester 
+269734.5165  72661.7239  15878.6172   2973.8659    932.7745 
+> 
+> proc.time()
+   user  system elapsed 
+ 13.916   0.088  14.006 

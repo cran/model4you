@@ -4,12 +4,14 @@
 \alias{node_pmterminal}
 \title{Panel-Generator for Visualization of pmtrees}
 \usage{
-node_pmterminal(obj, digits = 2, confint = TRUE, plotfun,
-  nid = function(node) paste0(nam[id_node(node)], ", n = ", node$info$nobs),
-  ...)
+node_pmterminal(obj, coeftable = TRUE, digits = 2, confint = TRUE,
+  plotfun, nid = function(node) paste0(nam[id_node(node)], ", n = ",
+  node$info$nobs), ...)
 }
 \arguments{
 \item{obj}{an object of class party.}
+
+\item{coeftable}{should a table with coefficients be added to the plot?}
 
 \item{digits}{integer, used for formating numbers.}
 

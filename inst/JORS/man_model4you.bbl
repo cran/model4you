@@ -1,0 +1,81 @@
+\begin{thebibliography}{10}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Auguie(2017)]{gridExtra}
+Baptiste Auguie.
+\newblock \emph{{gridExtra}: Miscellaneous Functions for "Grid" Graphics},
+  2017.
+\newblock URL \url{https://CRAN.R-project.org/package=gridExtra}.
+\newblock R package version 2.3.
+
+\bibitem[Clarke and Sherrill-Mix(2017)]{ggbeeswarm}
+Erik Clarke and Scott Sherrill-Mix.
+\newblock \emph{{ggbeeswarm}: Categorical Scatter (Violin Point) Plots}, 2017.
+\newblock URL \url{https://CRAN.R-project.org/package=ggbeeswarm}.
+\newblock R package version 0.6.0.
+
+\bibitem[Friedman(2001)]{friedman2001greedy}
+Jerome~H. Friedman.
+\newblock Greedy function approximation: A gradient boosting machine.
+\newblock \emph{The Annals of Statistics}, 29\penalty0 (5):\penalty0
+  1189--1232, 2001.
+\newblock URL \url{http://www.jstor.org/stable/2699986}.
+
+\bibitem[Hothorn and Zeileis(2015)]{hothorn_partykit_2015}
+Torsten Hothorn and Achim Zeileis.
+\newblock {partykit}: A modular toolkit for recursive partytioning in {R}.
+\newblock \emph{Journal of Machine Learning Research}, 16:\penalty0 3905--3909,
+  2015.
+\newblock URL \url{http://jmlr.org/papers/v16/hothorn15a.html}.
+
+\bibitem[Hothorn and Zeileis(2017)]{hothorn_partykit_2017}
+Torsten Hothorn and Achim Zeileis.
+\newblock \emph{partykit: A Toolkit for Recursive Partytioning}, 2017.
+\newblock URL \url{http://CRAN.R-project.org/package=partykit}.
+\newblock R package version 1.2-0.
+
+\bibitem[Seibold et~al.(2016)Seibold, Zeileis, and
+  Hothorn]{seibold_model-based_2016}
+Heidi Seibold, Achim Zeileis, and Torsten Hothorn.
+\newblock Model-based recursive partitioning for subgroup analyses.
+\newblock \emph{International Journal of Biostatistics}, 12\penalty0
+  (1):\penalty0 45--63, 2016.
+\newblock \doi{10.1515/ijb-2015-0032}.
+
+\bibitem[Seibold et~al.(2017)Seibold, Zeileis, and
+  Hothorn]{seibold_individual_2017}
+Heidi Seibold, Achim Zeileis, and Torsten Hothorn.
+\newblock Individual treatment effect prediction for amyotrophic lateral
+  sclerosis patients.
+\newblock \emph{Statistical Methods in Medical Research}, 2017.
+\newblock \doi{10.1177/0962280217693034}.
+\newblock Online first.
+
+\bibitem[Wickham(2016)]{ggplot2}
+Hadley Wickham.
+\newblock \emph{{ggplot2}: Elegant Graphics for Data Analysis}.
+\newblock Springer-Verlag New York, 2016.
+\newblock ISBN 978-3-319-24277-4.
+\newblock URL \url{http://ggplot2.org}.
+
+\bibitem[Zeileis et~al.(2008)Zeileis, Hothorn, and
+  Hornik]{zeileis_model-based_2008}
+Achim Zeileis, Torsten Hothorn, and Kurt Hornik.
+\newblock Model-based recursive partitioning.
+\newblock \emph{Journal of Computational and Graphical Statistics}, 17\penalty0
+  (2):\penalty0 492--514, 2008.
+\newblock \doi{10.1198/106186008X319331}.
+
+\bibitem[Zeileis et~al.(2018)Zeileis, Strobl, Wickelmaier, Komboz, and
+  Kopf]{psychotools}
+Achim Zeileis, Carolin Strobl, Florian Wickelmaier, Basil Komboz, and Julia
+  Kopf.
+\newblock \emph{{psychotools}: Infrastructure for Psychometric Modeling}, 2018.
+\newblock URL \url{https://CRAN.R-project.org/package=psychotools}.
+\newblock R package version 0.4-3.
+
+\end{thebibliography}

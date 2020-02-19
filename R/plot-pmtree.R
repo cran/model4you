@@ -54,7 +54,7 @@
 #' @export
 binomial_glm_plot <- function(mod, data = NULL, plot_data = FALSE, theme = theme_classic(), ...) {
 
-  if(!("glm" %in% class(mod))) stop("model should be of class glm, is of class ", class(mod))
+  if(!inherits(mod, "glm")) stop("model should be of class glm, is of class ", class(mod))
   fam <- stats::family(mod)$family
   if(fam != "binomial") stop("model should have family binomail, but has family ", fam)
 
@@ -151,7 +151,7 @@ lm_plot <- function(mod, data = NULL, densest = FALSE, theme = theme_classic(),
   yrange = NULL) {
 
   cl <- class(mod)
-  if(!("lm" %in% cl) & length(cl) != 1) stop("model should be of class lm, is of class ", cl)
+  if(!inherits(mod, "lm") & length(cl) != 1) stop("model should be of class lm, is of class ", cl)
 
   ## check if model has on factor covariate
   if(!one_factor(mod))
@@ -229,8 +229,7 @@ lm_plot <- function(mod, data = NULL, densest = FALSE, theme = theme_classic(),
 #' @export
 survreg_plot <- function(mod, data = NULL, theme = theme_classic(),
   yrange = NULL) {
-  cl <- class(mod)
-  if(!("survreg" %in% cl)) stop("model should be of class survreg, but is of class ", cl)
+  if(!inherits(mod, "survreg")) stop("model should be of class survreg, but is of class ", class(mod))
 
   ## check if model has on factor covariate
   if(!one_factor(mod))
@@ -342,7 +341,9 @@ coxph_plot <- function(mod, data = NULL, theme = theme_classic(),
 #' class grapcon_generator for pmtrees is documented here.
 #'
 #' @param obj an object of class party.
-#' @param coeftable should a table with coefficients be added to the plot?
+#' @param coeftable logical or function. If logical: should a table with
+#' coefficients be added to the plot (TRUE/FALSE)? If function: A function
+#' comparable to \code{\link{coeftable.survreg}}.
 #' @param digits integer, used for formating numbers.
 #' @param confint Should a confidence interval be computed.
 #' @param plotfun Plotting function to be used. Needs to be of format
@@ -354,13 +355,33 @@ coxph_plot <- function(mod, data = NULL, theme = theme_classic(),
 #' @examples
 #' if(require("survival")) {
 #' ## compute survreg model
-#' mod_surv <- survreg(Surv(futime, fustat) ~ factor(rx), ovarian, dist='weibull')
+#' mod_surv <- survreg(Surv(futime, fustat) ~ factor(rx), ovarian,
+#'   dist = 'weibull')
 #' survreg_plot(mod_surv)
 #'
 #' ## partition model and plot
 #' tr_surv <- pmtree(mod_surv)
 #' plot(tr_surv, terminal_panel = node_pmterminal(tr_surv, plotfun = survreg_plot,
 #'                                                confint = TRUE))
+#' }
+#'
+#' if(require("survival") & require("TH.data")) {
+#'   ## Load data
+#'   data(GBSG2, package = "TH.data")
+#'
+#'   ## Weibull model
+#'   bmod <- survreg(Surv(time, cens) ~ horTh, data = GBSG2, model = TRUE)
+#'
+#'   ## Coefficient table
+#'   grid.newpage()
+#'   coeftable.survreg(bmod)
+#'
+#'   ## partitioned model
+#'   tr <- pmtree(bmod)
+#'
+#'   ## plot with specific coeftable
+#'   plot(tr, terminal_panel = node_pmterminal(tr, plotfun = survreg_plot,
+#'     confint = TRUE, coeftable = coeftable.survreg))
 #' }
 #'
 #' @export
@@ -404,62 +425,80 @@ node_pmterminal <- function(obj, coeftable = TRUE, digits = 2, confint = TRUE, p
       heights = unit(c(0.1, 1), "null")))
     pushViewport(top_vp)
 
-    ## if table should be printed
-    if(coeftable) {
-      coefs <- as.matrix(node$info$coefficients)
-      if(confint) {
-        ci <- confint(nmod)
-        coefs <- cbind(coefs, ci)
+    ## table of coefficients
+    if(is.logical(coeftable)) {
+
+      ## if table should be printed
+      if(coeftable) {
+        coefs <- as.matrix(node$info$coefficients)
+        if(confint) {
+          ci <- confint(nmod)
+          coefs <- cbind(coefs, ci)
+        }
+        cf <- format(round(coefs, digits), nsmall = digits)
+        colnams <- colnames(cf)
+        colnams[1] <- "theta"
+        cftab <- tableGrob(cf, cols = colnams,
+          theme = ttheme_minimal(colhead = list(fg_params = list(parse=TRUE))))
+        tabwid <- sum(cftab$widths)
+
+        ## viewport enclosing all
+        node_vp <- viewport(
+          layout.pos.row = 2,
+          layout = grid.layout(2, 1),
+          width = max(tabwid, unit(0.95, "npc")),
+          height = unit(0.95, "npc"),
+          y = unit(0.25, "npc"),
+          just = "bottom"
+        )
+        pushViewport(node_vp)
+
+        grid.rect(gp = gpar(fill = "white"))
+
+        ## table (and viewport table)
+        tablevp <- viewport(layout.pos.row = 1, layout.pos.col = 1)
+        pushViewport(tablevp)
+        grid.draw(cftab)
+        popViewport()
+
+        ## viewport plot
+        plotvp <- viewport(layout.pos.row = 2, layout.pos.col = 1,
+          width = unit(0.95, "npc"),
+          height = unit(0.95, "npc"))
+        pushViewport(plotvp)
+
+      } else {
+        ### no table should be printed
+        ## viewport enclosing all
+        node_vp <- viewport(
+          layout.pos.row = 2,
+          width = unit(0.95, "npc"),
+          height = unit(0.95, "npc")
+        )
+        pushViewport(node_vp)
+
+        grid.rect(gp = gpar(fill = "white"))
+
+        ## viewport plot
+        plotvp <- viewport(
+          width = unit(0.95, "npc"),
+          height = unit(0.95, "npc")
+        )
+        pushViewport(plotvp)
       }
-      cf <- format(round(coefs, digits), nsmall = digits)
-      colnams <- colnames(cf)
-      colnams[1] <- "theta"
-      cftab <- tableGrob(cf, cols = colnams,
-        theme = ttheme_minimal(colhead = list(fg_params = list(parse=TRUE))))
-      tabwid <- sum(cftab$widths)
+    } else {
 
-      ## viewport enclosing all
-      node_vp <- viewport(
-        layout.pos.row = 2,
-        layout = grid.layout(2, 1),
-        width = max(tabwid, unit(0.95, "npc")),
-        height = unit(0.95, "npc"),
-        y = unit(0.25, "npc"),
-        just = "bottom"
-      )
-      pushViewport(node_vp)
+      ## if coeftable is a function
+      if(!is.function(coeftable))
+        stop("coeftable should either be logical or a function.")
 
-      grid.rect(gp = gpar(fill = "white"))
-
-      ## table (and viewport table)
-      tablevp <- viewport(layout.pos.row = 1, layout.pos.col = 1)
-      pushViewport(tablevp)
-      grid.draw(cftab)
-      popViewport()
+      coeftable(model = nmod, confint = confint, digits = digits,
+        intree = TRUE)
 
       ## viewport plot
       plotvp <- viewport(layout.pos.row = 2, layout.pos.col = 1,
         width = unit(0.95, "npc"),
         height = unit(0.95, "npc"))
-      pushViewport(plotvp)
-
-    } else {
-      ### no table should be printed
-      ## viewport enclosing all
-      node_vp <- viewport(
-        layout.pos.row = 2,
-        width = unit(0.95, "npc"),
-        height = unit(0.95, "npc")
-      )
-      pushViewport(node_vp)
-
-      grid.rect(gp = gpar(fill = "white"))
-
-      ## viewport plot
-      plotvp <- viewport(
-        width = unit(0.95, "npc"),
-        height = unit(0.95, "npc")
-      )
       pushViewport(plotvp)
     }
 
@@ -487,3 +526,75 @@ node_pmterminal <- function(obj, coeftable = TRUE, digits = 2, confint = TRUE, p
 }
 
 class(node_pmterminal) <- "grapcon_generator"
+
+
+#' @title Table of coefficients for survreg model
+#' @description This function is mostly useful for plotting a pmtree.
+#' The generic plotting does not show the estimate and confidence interval
+#' of the scale parameter. This one does.
+#' @param model model of class \code{\link[survival]{survreg}}
+#' @param confint should a confidence interval be computed? Default: TRUE
+#' @param digits integer, used for formating numbers. Default: 2
+#' @param intree is the table plotted within a tree? Default: FALSE
+#' @return None.
+#' @examples
+#' if(require("survival") & require("TH.data")) {
+#'   ## Load data
+#'   data(GBSG2, package = "TH.data")
+#'
+#'   ## Weibull model
+#'   bmod <- survreg(Surv(time, cens) ~ horTh, data = GBSG2, model = TRUE)
+#'
+#'   ## Coefficient table
+#'   grid.newpage()
+#'   coeftable.survreg(bmod)
+#'
+#'   ## partitioned model
+#'   tr <- pmtree(bmod)
+#'
+#'   ## plot
+#'   plot(tr, terminal_panel = node_pmterminal(tr, plotfun = survreg_plot,
+#'     confint = TRUE, coeftable = coeftable.survreg))
+#' }
+#'
+#' @export
+coeftable.survreg <- function(model, confint = TRUE, digits = 2, intree = FALSE) {
+
+  coefs <- c(model$coefficients, "Log(scale)" = log(model$scale))
+
+  if(confint) {
+    ci <- cbind(
+      "2.5 %" = coefs - stats::qnorm(0.975) * sqrt(diag(model$var)),
+      "97.5 %" = coefs + stats::qnorm(0.975) * sqrt(diag(model$var))
+    )
+    coefs <- cbind(coefs, ci)
+  }
+  cf <- format(round(coefs, digits), nsmall = digits)
+  colnams <- colnames(cf)
+  colnams[1] <- "theta"
+  cftab <- gridExtra::tableGrob(cf, cols = colnams,
+    theme = ttheme_minimal(colhead = list(fg_params = list(parse=TRUE))))
+  tabwid <- sum(cftab$widths)
+
+  if(intree) {
+    ## viewport enclosing table and plot
+    ## needed only if table is plotted within tree
+    node_vp <- viewport(
+      layout.pos.row = 2,
+      layout = grid.layout(2, 1),
+      width = max(tabwid, unit(0.95, "npc")),
+      height = unit(0.95, "npc"),
+      y = unit(0.25, "npc"),
+      just = "bottom"
+    )
+    pushViewport(node_vp)
+
+    grid.rect(gp = gpar(fill = "white"))
+  }
+
+  ## table (and viewport table)
+  tablevp <- viewport(layout.pos.row = 1, layout.pos.col = 1)
+  pushViewport(tablevp)
+  grid.draw(cftab)
+  popViewport()
+}

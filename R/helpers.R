@@ -21,6 +21,7 @@
 #'
 #' @importFrom sandwich estfun
 #' @importFrom stats update coef logLik getCall as.formula residuals
+#' @importFrom methods is
 .modelfit <- function(model, data, coeffun = coef, weights, control, parm = NULL) {
 
   fitfun <- function(subset, weights, info = NULL, estfun = TRUE, object = FALSE) {
@@ -44,7 +45,7 @@
     ## get convergence info
     if (is.null(control$converged)) {
       conv <- if (is.null(mod$converged)) TRUE else mod$converged
-      if(class(mod) == "survreg" && any(is.na(mod$coef))) conv <- FALSE
+      if(is(mod, "survreg") && any(is.na(mod$coef))) conv <- FALSE
     } else {
       conv <- control$converged(mod, data, subset)
     }
@@ -57,7 +58,7 @@
     ## add estfun if wanted
     if(estfun) {
       ef <- estfun(mod)
-      if("coxph" %in% class(mod))
+      if(is(mod, "coxph"))
         ef <- as.matrix(cbind(residuals(mod, "martingale"), ef))
       ret$estfun <- matrix(0, nrow = NROW(data), ncol = NCOL(ef))
       ret$estfun[subset,] <- ef
@@ -80,7 +81,7 @@
     msg <- paste0("No data given. I'm using data set ", modcall$data,
                   " from the current environment parent.frame(). Please check if that is what you want.")
   }
-  if(class(data) == "try-error") {
+  if(is(data, "try-error")) {
     if(is.null(data <- model$data)){
       stop("Need a model with data component, if data is NULL. Solutions: specify data in function call of this function or of the model.")
     } else {
@@ -103,10 +104,14 @@ one_factor <- function(object) {
   f <- attr(terms(object), "factors")
   if(length(f) == 0L || NCOL(f) != 1L) return(FALSE)
   d <- attr(terms(object), "dataClasses")
-  if(d[colnames(f)] %in% c("ordered", "factor")) {
-    return(TRUE)
+  if(!is.null(d)) {
+    if(d[colnames(f)] %in% c("ordered", "factor")) {
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
   } else {
-    return(FALSE)
+    return(TRUE)  ## TODO: make a better check here!
   }
 }
 

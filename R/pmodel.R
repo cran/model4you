@@ -20,12 +20,14 @@
 #' 
 #' @example inst/examples/ex-pmodel.R
 #' 
+#' 
 #' @export
+#' @importFrom methods is
 pmodel <- function(x = NULL, model = NULL, newdata = NULL, OOB = TRUE, fun = coef,
                    return_attr = c("modelcall", "data", "similarity")) {
   
   ## compute similarity weights
-  if(is.matrix(x)) {
+  if(is(x, "matrix")) {
     if(is.null(model)) stop("When x is a matrix, model must not be NULL. Please enter a model object.")
     pweights <- x
   } else {
@@ -48,7 +50,7 @@ pmodel <- function(x = NULL, model = NULL, newdata = NULL, OOB = TRUE, fun = coe
   }
   ret <- apply(pweights, 2, get_pmod)
 
-  if(class(ret) == "matrix") ret <- t(ret)
+  if(is(ret, "matrix")) ret <- t(ret)
   if(all.equal(fun, identity) == TRUE) class(ret) <- c("pmodel_identity", class(ret))
   class(ret) <- c("pmodel", class(ret))
   

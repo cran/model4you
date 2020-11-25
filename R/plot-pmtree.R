@@ -60,7 +60,8 @@ binomial_glm_plot <- function(mod, data = NULL, plot_data = FALSE, theme = theme
 
   ## check if model has on factor covariate
   if(!one_factor(mod))
-    stop("Model needs to be with a single factor covariate. Please check!")
+    stop("Plotting currently only works for models with a single factor covariate. 
+        We recommend using partykit or ggparty plotting functionalities!")
 
   ## get formula and data
   modcall <- getCall(mod)
@@ -155,7 +156,8 @@ lm_plot <- function(mod, data = NULL, densest = FALSE, theme = theme_classic(),
 
   ## check if model has on factor covariate
   if(!one_factor(mod))
-    stop("Model needs to be with a single factor covariate. Please check!")
+      stop("Plotting currently only works for models with a single factor covariate. 
+        We recommend using partykit or ggparty plotting functionalities!")
 
   ## get formula and data
   modcall <- getCall(mod)
@@ -233,7 +235,8 @@ survreg_plot <- function(mod, data = NULL, theme = theme_classic(),
 
   ## check if model has on factor covariate
   if(!one_factor(mod))
-    stop("Model needs to be with a single factor covariate. Please check!")
+    stop("Plotting currently only works for models with a single factor covariate. 
+        We recommend using partykit or ggparty plotting functionalities!")
 
   ## get formula and data
   modcall <- getCall(mod)
@@ -296,7 +299,8 @@ coxph_plot <- function(mod, data = NULL, theme = theme_classic(),
 
   ## check if model has on factor covariate
   if(!one_factor(mod))
-    stop("Model needs to be with a single factor covariate. Please check!")
+      stop("Plotting currently only works for models with a single factor covariate. 
+        We recommend using partykit or ggparty plotting functionalities!")
 
   ## get formula and data
   modcall <- getCall(mod)
@@ -320,7 +324,7 @@ coxph_plot <- function(mod, data = NULL, theme = theme_classic(),
         probability = s_raw$surv[ , i],
         row.names = NULL)))
   pr <- rbind(pr,
-    data.frame(xdat, pr = c(0, 0), probability = c(1, 1)))
+    data.frame(xdat, pr = rep(0, NROW(xdat)), probability = rep(1, NROW(xdat))))
   pr[[1]] <- as.factor(pr[[1]])
 
   ## plot

@@ -1,8 +1,8 @@
 Package: model4you
 Title: Stratified and Personalised Models Based on Model-Based Trees
         and Forests
-Date: 2020-02-12
-Version: 0.9-5
+Date: 2020-11-25
+Version: 0.9-6
 Authors@R: c(person(given = "Heidi", family = "Seibold", 
                     role = c("aut", "cre"), email = "heidi@seibold.co"),
 	           person(given = "Achim", family = "Zeileis", 
@@ -26,12 +26,12 @@ Suggests: mvtnorm, TH.data, psychotools, strucchange, plyr, knitr,
         ggbeeswarm, MASS
 License: GPL-2 | GPL-3
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2020-02-17 10:27:40 UTC; kennwortistkennwort
+Packaged: 2020-11-25 09:58:08 UTC; heidiseibold
 Author: Heidi Seibold [aut, cre],
   Achim Zeileis [aut],
   Torsten Hothorn [aut]
 Maintainer: Heidi Seibold <heidi@seibold.co>
 Repository: CRAN
-Date/Publication: 2020-02-19 09:20:02 UTC
+Date/Publication: 2020-11-25 12:10:02 UTC

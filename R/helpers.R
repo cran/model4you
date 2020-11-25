@@ -57,9 +57,12 @@
 
     ## add estfun if wanted
     if(estfun) {
-      ef <- estfun(mod)
-      if(is(mod, "coxph"))
-        ef <- as.matrix(cbind(residuals(mod, "martingale"), ef))
+      if(is(mod, "coxph")) {
+          ef <- cbind(mod$residuals, mod$residuals * stats::model.matrix(mod))
+        # old: ef <- as.matrix(cbind(residuals(mod, "martingale"), ef))
+      } else {
+          ef <- estfun(mod)
+      }
       ret$estfun <- matrix(0, nrow = NROW(data), ncol = NCOL(ef))
       ret$estfun[subset,] <- ef
       if(!is.null(parm)) ret$estfun <- ret$estfun[, parm]
@@ -128,7 +131,7 @@ one_factor <- function(object) {
 .prepare_args <- function(model, data, zformula, control, ...) {
 
   if(!one_factor(model))
-    stop("Model needs to be with a single factor covariate. Please check!")
+    warning("Models with anything but single factor covariates are in beta. Please check if this is what you want!")
 
   if (is.null(modcall <- getCall(model)))
     stop("Need a model with call component, see getCall")

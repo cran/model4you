@@ -1,4 +1,4 @@
-68b377c9fd6daacfb140bf349c642d6b *DESCRIPTION
+0e04343c1dcb77fdf1144a83f8434689 *DESCRIPTION
 ea7e2c45127c39ca20f781c34ed20627 *NAMESPACE
 92ba4b4582192b6b99e2ae3d899acfa9 *R/helpers.R
 5450ab1cb902357459169f1bf51dd566 *R/objfun.R
@@ -6,7 +6,7 @@ ea7e2c45127c39ca20f781c34ed20627 *NAMESPACE
 3c7415d31ee41a0576828f865e8c5878 *R/pmforest.R
 0c5f8823818479b9647134c3c24485ac *R/pmodel-methods.R
 cd3e68b69ae2b682f0f2e3061e4d1d7f *R/pmodel-test.R
-321263dce8c942cfe12b3eb93aa6030f *R/pmodel.R
+6911d2ac57c11128f1f95bc8e62ee1ae *R/pmodel.R
 39c150844560d3a5282ef5ee9f1ad550 *R/pmtree-methods.R
 43c0b5d8cfbeb153b27a330454c3ad1f *R/pmtree.R
 cad5d4f9604bfbc1d731c353520a87f0 *R/varimp.R
@@ -18,7 +18,7 @@ b0628657bfd43a24adb4bfddac734937 *inst/JORS/man_model4you.Rnw
 1f2d8a4e1a62682db92398f1f84a373b *inst/JORS/pmworkflow.tex
 a3ab47f6dd9f7fb9801b490091947c65 *inst/JORS/ref_model4you.bib
 5f821820b70a4cce6f3d6f372c61da5a *inst/JORS/treefamily.tex
-202f6973a0978e7ce70682f506004841 *inst/NEWS.Rd
+12f4896ecd2ee326289895f0f21bf85f *inst/NEWS.Rd
 bd2a8ea8ee1b0284ba6221180c89e6af *inst/examples/ex-pmodel-test.R
 49a2d603cd1392d2acaadb3a06ece83e *inst/examples/ex-pmodel.R
 fe548097293d4b30a56033e1cf0016b2 *inst/examples/ex-pmodel_long.R

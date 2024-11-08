@@ -1,4 +1,4 @@
-0e04343c1dcb77fdf1144a83f8434689 *DESCRIPTION
+90dad12ae4144ab082173749d79451fc *DESCRIPTION
 ea7e2c45127c39ca20f781c34ed20627 *NAMESPACE
 92ba4b4582192b6b99e2ae3d899acfa9 *R/helpers.R
 5450ab1cb902357459169f1bf51dd566 *R/objfun.R
@@ -25,7 +25,7 @@ fe548097293d4b30a56033e1cf0016b2 *inst/examples/ex-pmodel_long.R
 a293988502b3d5ac3f844385308994d6 *inst/examples/ex-pmtree-methods.R
 74f970c5d792a012164244e3869eacc5 *inst/examples/ex-pmtree.R
 4aeda223ff7031861701732ccd103eb1 *inst/reproducing_papers/2016_subgroup_analyses_ijb.Rmd
-be651d038e1e6d1925d7ac34d879c70d *inst/reproducing_papers/2017_individual_treatment_effect_als_smmr.Rmd
+c2ea005cce7e547257c1c636f941c115 *inst/reproducing_papers/2017_individual_treatment_effect_als_smmr.Rmd
 cdeb1c0560bee894a37f65a6c47a7549 *man/binomial_glm_plot.Rd
 05b54c3458220a9c40ae7c0ad894180d *man/coeftable.survreg.Rd
 645599e66df5c203023cc624139d520d *man/coxph_plot.Rd
@@ -52,4 +52,4 @@ d20f8b3bf5e3368b287992c8bfdaa227 *man/pmodel.Rd
 60dc3d6ff444aa25f23163b127f53452 *tests/test-pmodel.R
 7299aab4f9c27e0c382abebc5f5bb497 *tests/test-pmodel.Rout.save
 a577dc52742e209d8b7e544ee072e08f *tests/test-pmtree.R
-d84523000323ed5461376e713fa4633f *tests/test-pmtree.Rout.save
+1195e4cc2be89f233bad9f4425263011 *tests/test-pmtree.Rout.save

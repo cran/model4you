@@ -1,8 +1,8 @@
 Package: model4you
 Title: Stratified and Personalised Models Based on Model-Based Trees
         and Forests
-Date: 2024-11-06
-Version: 0.9-8
+Date: 2026-02-05
+Version: 0.9-9
 Authors@R: c(person(given = "Heidi", family = "Seibold", 
                     role = c("aut", "cre"), email = "heidi@seibold.co"),
 	           person(given = "Achim", family = "Zeileis", 
@@ -21,20 +21,20 @@ Description: Model-based trees for subgroup analyses in clinical trials and
   see Seibold, Zeileis and Hothorn (2017) <doi:10.1177/0962280217693034>.
 Depends: R (>= 3.1.0), partykit (>= 1.2-6), grid
 Imports: sandwich, stats, methods, ggplot2, Formula, gridExtra,
-        survival
+        survival, rlang
 Suggests: mvtnorm, TH.data, psychotools, strucchange, plyr, knitr,
         ggbeeswarm, MASS
 License: GPL-2 | GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Author: Heidi Seibold [aut, cre],
   Achim Zeileis [aut],
   Torsten Hothorn [aut]
 Maintainer: Heidi Seibold <heidi@seibold.co>
 Repository: CRAN
 Repository/R-Forge/Project: partykit
-Repository/R-Forge/Revision: 3300
-Repository/R-Forge/DateTimeStamp: 2024-11-06 12:41:19
-Date/Publication: 2024-11-08 11:40:02 UTC
+Repository/R-Forge/Revision: 3333
+Repository/R-Forge/DateTimeStamp: 2026-02-05 18:29:56
+Date/Publication: 2026-02-12 10:10:02 UTC
 NeedsCompilation: no
-Packaged: 2024-11-06 12:45:06 UTC; rforge
+Packaged: 2026-02-05 18:44:08 UTC; rforge
